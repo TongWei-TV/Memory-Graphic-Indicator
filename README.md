@@ -2,6 +2,8 @@
 
 在 GNOME Shell 顶部面板用图形显示内存与虚拟内存占用。
 
+![Memory Graphic Indicator 截图](screenshot.png)
+
 - **内存**：物理内存占用（MemTotal − MemAvailable）
 - **虚拟内存**：磁盘 swap 与 zram **分段堆叠**在同一图内
 - **明暗自适应**：跟随系统亮/暗样式，暗色模式下按亮度系数自动压暗颜色
@@ -73,6 +75,7 @@ memory-graphic-indicator@tongwei-tv.github.io/
 │   └── gschemas.compiled                      # 安装时由 glib-compile-schemas 生成
 ├── test-render.js                             # 开发用：离屏渲染预览图（不随发布包分发）
 ├── install.sh                                 # 本地安装脚本（不随发布包分发）
+├── screenshot.png                             # 效果截图（不随发布包分发）
 ├── COPYING                                    # GPL-2.0 许可证全文
 └── README.md
 ```
@@ -91,9 +94,10 @@ GPL-2.0-or-later，见 `COPYING`。与 GNOME Shell 本身的许可证兼容。
 
 ## 发布
 
-提交到 extensions.gnome.org 的 zip 需**根目录**直接包含 `metadata.json` / `extension.js`（无外层文件夹），且不含 `install.sh` 与 `test-render.js`。仓库根目录执行：
+提交到 extensions.gnome.org 的 zip 需**根目录**直接包含 `metadata.json` / `extension.js`（无外层文件夹），且不含 `install.sh`、`test-render.js`、`screenshot.png` 与 `preview/`。仓库根目录执行：
 
 ```bash
 zip -r memory-graphic-indicator.zip . \
-  -x '*.git*' -x 'install.sh' -x 'test-render.js' -x 'preview/*' -x '*.zip'
+  -x '*.git*' -x 'install.sh' -x 'test-render.js' -x 'screenshot.png' \
+  -x 'preview/*' -x '*.zip'
 ```
