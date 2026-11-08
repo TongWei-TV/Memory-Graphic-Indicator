@@ -7,10 +7,14 @@ SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEST="$HOME/.local/share/gnome-shell/extensions/$UUID"
 
 mkdir -p "$DEST"
-rm -rf "$DEST"
-cp -r "$SRC/." "$DEST/"
-# 开发产物不装进扩展目录
-rm -rf "$DEST/preview" "$DEST/test-render.js" "$DEST/install.sh" "$DEST/README.md" "$DEST"/*.zip
+# 增量拷贝（不整目录删除，避免误伤已有数据）；开发产物不拷贝。
+tar -C "$SRC" \
+    --exclude='./.git' --exclude='./.gitignore' \
+    --exclude='./preview' --exclude='./test-render.js' \
+    --exclude='./install.sh' --exclude='./*.zip' \
+    -cf - . | tar -C "$DEST" -xf -
+# 清理旧版本可能残留的开发文件
+rm -rf "$DEST/.git" "$DEST/.gitignore" "$DEST/preview" "$DEST/test-render.js"
 glib-compile-schemas "$DEST/schemas"
 
 echo "已安装到: $DEST"

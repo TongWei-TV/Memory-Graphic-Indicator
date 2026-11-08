@@ -16,7 +16,7 @@ import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
 import {parseHexColor, parseHexColorAlpha, scaleColor} from './lib/colors.js';
 import {canvasSize, drawBars} from './lib/drawing.js';
-import {formatKb, readUsage} from './lib/memory.js';
+import {formatKb, readUsageAsync} from './lib/memory.js';
 
 const SETTINGS_KEYS = [
     'show-virtual-memory',
@@ -63,6 +63,8 @@ export const MemoryBarIndicator = GObject.registerClass({
         this._interfaceSettings = new Gio.Settings({schema_id: 'org.gnome.desktop.interface'});
         this._data = null;
         this._timerId = 0;
+        this._cancellable = new Gio.Cancellable();
+        this._destroyed = false;
         this._signals = [];
 
         this._area = new St.DrawingArea({
@@ -279,14 +281,17 @@ export const MemoryBarIndicator = GObject.registerClass({
     }
 
     _refresh() {
-        const data = readUsage();
-        if (!data)
-            return;
+        // Async read: /proc files are small but synchronous IO is banned in
+        // shell code. The cancellable aborts in-flight reads on destroy.
+        readUsageAsync(this._cancellable, data => {
+            if (this._destroyed || !data)
+                return;
 
-        this._data = data;
-        this._syncSize();
-        this._updateMenu();
-        this._repaint();
+            this._data = data;
+            this._syncSize();
+            this._updateMenu();
+            this._repaint();
+        });
     }
 
     _repaint() {
@@ -405,6 +410,11 @@ export const MemoryBarIndicator = GObject.registerClass({
     // ----------------------------------------------------------------- cleanup
 
     _cleanup() {
+        this._destroyed = true;
+
+        if (this._cancellable)
+            this._cancellable.cancel();
+
         if (this._timerId) {
             GLib.source_remove(this._timerId);
             this._timerId = 0;

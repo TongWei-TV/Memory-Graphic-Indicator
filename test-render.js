@@ -1,12 +1,25 @@
 import Cairo from 'gi://cairo';
 import GLib from 'gi://GLib';
+import System from 'system';
 
 import {parseHexColor, parseHexColorAlpha, scaleColor} from './lib/colors.js';
 import {canvasSize, drawBars} from './lib/drawing.js';
-import {readUsage} from './lib/memory.js';
+import {readUsageAsync} from './lib/memory.js';
 
-const data = readUsage();
 const SCALE = 8;
+// 开发脚本，把异步读取转成同步数据供渲染用。
+let data = null;
+const loop = new GLib.MainLoop(null, false);
+readUsageAsync(null, result => {
+    data = result;
+    loop.quit();
+});
+loop.run();
+
+if (!data) {
+    print('failed to read memory usage');
+    System.exit(1);
+}
 
 function plans() {
     const segments = [];
