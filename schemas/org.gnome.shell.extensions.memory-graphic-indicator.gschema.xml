@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="memory-graphic-indicator">
+
+  <enum id="org.gnome.shell.extensions.memory-graphic-indicator.arrangement">
+    <value nick="rows" value="0"/>
+    <value nick="columns" value="1"/>
+  </enum>
+
+  <enum id="org.gnome.shell.extensions.memory-graphic-indicator.direction">
+    <value nick="ltr" value="0"/>
+    <value nick="rtl" value="1"/>
+  </enum>
+
+  <schema id="org.gnome.shell.extensions.memory-graphic-indicator"
+          path="/org/gnome/shell/extensions/memory-graphic-indicator/">
+
+    <!-- 是否显示虚拟内存（swap + zram） -->
+    <key name="show-virtual-memory" type="b">
+      <default>true</default>
+      <summary>Show virtual memory</summary>
+      <description>Additionally draw a bar for virtual memory (swap + zram).</description>
+    </key>
+
+    <!-- 排列方式：上下两条 / 左右两条（条形始终横向填充） -->
+    <key name="arrangement" enum="org.gnome.shell.extensions.memory-graphic-indicator.arrangement">
+      <default>'rows'</default>
+      <summary>Arrangement</summary>
+      <description>rows: the two bars are stacked vertically. columns: the two bars sit side by side horizontally.</description>
+    </key>
+
+    <!-- 两条的先后顺序，可拖动调整；键名 "memory" / "virtual" -->
+    <key name="bar-order" type="as">
+      <default>['memory', 'virtual']</default>
+      <summary>Bar order</summary>
+      <description>Order of the bars. "memory" first means the memory bar is on top (rows) or on the left (columns).</description>
+    </key>
+
+    <!-- 填充方向：ltr（0% 在左）/ rtl（0% 在右） -->
+    <key name="bar-direction" enum="org.gnome.shell.extensions.memory-graphic-indicator.direction">
+      <default>'ltr'</default>
+      <summary>Bar direction</summary>
+      <description>ltr: the bars fill from left to right, so 0% sits on the left edge. rtl: the bars fill from right to left, so 0% sits on the right edge.</description>
+    </key>
+
+    <!-- 整体顺时针旋转 90 度 -->
+    <key name="rotate" type="b">
+      <default>false</default>
+      <summary>Rotate</summary>
+      <description>Rotate the whole drawing 90 degrees clockwise, so the bars fill from top to bottom.</description>
+    </key>
+
+    <!-- 是否启用上下排列时各条的独立宽度/圆角 -->
+    <key name="per-bar-size" type="b">
+      <default>true</default>
+      <summary>Per-bar size</summary>
+      <description>When enabled, the memory and virtual memory bars use their own width and corner radius in the rows arrangement. When disabled, both bars share bar-width and corner-radius.</description>
+    </key>
+
+    <!-- 上下排列时各条的独立宽度（左右排列使用共同宽度 bar-width） -->
+    <key name="memory-width" type="i">
+      <default>8</default>
+      <range min="2" max="32"/>
+      <summary>Memory bar width</summary>
+      <description>Thickness (width) of the memory bar when the bars are stacked vertically.</description>
+    </key>
+
+    <key name="virtual-width" type="i">
+      <default>8</default>
+      <range min="2" max="32"/>
+      <summary>Virtual memory bar width</summary>
+      <description>Thickness (width) of the virtual memory bar when the bars are stacked vertically.</description>
+    </key>
+
+    <!-- 上下排列时各条的独立圆角（左右排列使用共同圆角 corner-radius） -->
+    <key name="memory-radius" type="i">
+      <default>0</default>
+      <range min="0" max="16"/>
+      <summary>Memory bar corner radius</summary>
+      <description>Corner rounding of the memory bar when the bars are stacked vertically.</description>
+    </key>
+
+    <key name="virtual-radius" type="i">
+      <default>0</default>
+      <range min="0" max="16"/>
+      <summary>Virtual memory bar corner radius</summary>
+      <description>Corner rounding of the virtual memory bar when the bars are stacked vertically.</description>
+    </key>
+
+    <!-- 背景（轨道）颜色，支持 #rrggbb 或 #rrggbbaa -->
+    <key name="color-background" type="s">
+      <default>'#8080804d'</default>
+      <summary>Background color</summary>
+      <description>Color of the empty part of the bars in the light theme. Supports an alpha channel: #rrggbbaa.</description>
+    </key>
+
+    <!-- 每条图形的长度（水平方向的尺寸） -->
+    <key name="bar-length" type="i">
+      <default>56</default>
+      <range min="12" max="320"/>
+      <summary>Bar length</summary>
+      <description>Length of a single bar in pixels, i.e. its horizontal extent.</description>
+    </key>
+
+    <!-- 每条图形的宽度（厚度，上下排列时决定总高度） -->
+    <key name="bar-width" type="i">
+      <default>8</default>
+      <range min="2" max="32"/>
+      <summary>Bar width</summary>
+      <description>Thickness (width) of a single bar in pixels. When the bars are stacked vertically this also decides the total height.</description>
+    </key>
+
+    <!-- 图形之间的间距 -->
+    <key name="bar-gap" type="i">
+      <default>4</default>
+      <range min="0" max="24"/>
+      <summary>Bar gap</summary>
+      <description>Space in pixels between the two bars.</description>
+    </key>
+
+    <!-- 图形圆角 -->
+    <key name="corner-radius" type="i">
+      <default>0</default>
+      <range min="0" max="16"/>
+      <summary>Corner radius</summary>
+      <description>Corner rounding of the bars in pixels. 0 draws plain rectangles.</description>
+    </key>
+
+    <!-- 更新间隔（毫秒） -->
+    <key name="update-interval" type="i">
+      <default>1000</default>
+      <range min="200" max="60000"/>
+      <summary>Update interval</summary>
+      <description>Refresh interval in milliseconds.</description>
+    </key>
+
+    <!-- 亮色模式下的显示颜色 -->
+    <key name="color-memory" type="s">
+      <default>'#ef7014'</default>
+      <summary>Memory color</summary>
+      <description>Color used for the memory bar in the light theme.</description>
+    </key>
+
+    <key name="color-swap" type="s">
+      <default>'#52c15a'</default>
+      <summary>Swap color</summary>
+      <description>Color used for the swap segment of the virtual memory bar in the light theme.</description>
+    </key>
+
+    <key name="color-zram" type="s">
+      <default>'#2e6fd0'</default>
+      <summary>ZRAM color</summary>
+      <description>Color used for the zram segment of the virtual memory bar in the light theme.</description>
+    </key>
+
+    <!-- 暗色主题下的亮度系数 -->
+    <key name="dark-brightness" type="d">
+      <default>0.72</default>
+      <range min="0.20" max="1.0"/>
+      <summary>Dark theme brightness</summary>
+      <description>Brightness factor applied to all colors when a dark style is in use.</description>
+    </key>
+
+  </schema>
+</schemalist>

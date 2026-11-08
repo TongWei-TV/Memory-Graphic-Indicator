@@ -1,0 +1,9 @@
+{
+  "name": "Memory Graphic Indicator",
+  "description": "Shows memory and virtual memory usage as compact graphics in the top panel. The virtual memory graphic stacks swap and zram segments, with customizable colors that dim automatically in dark style.\n\n在顶部面板用图形显示内存与虚拟内存占用。虚拟内存由 swap 与 zram 分段堆叠组成，颜色可自定义，暗色主题下自动降低亮度。",
+  "uuid": "memory-graphic-indicator@tongwei-tv.github.io",
+  "settings-schema": "org.gnome.shell.extensions.memory-graphic-indicator",
+  "shell-version": ["45", "46", "47", "48"],
+  "url": "https://github.com/TongWei-TV/Memory-Graphic-Indicator",
+  "version": 1
+}
