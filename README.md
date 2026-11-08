@@ -1,6 +1,6 @@
 # Memory Graphic Indicator
 
-在 GNOME Shell 顶部面板用图形显示内存与虚拟内存占用。
+在AI辅助下实现，在 GNOME Shell 顶部面板用简约图形显示内存与虚拟内存占用情况。
 
 ![Memory Graphic Indicator 截图](screenshot.png)
 
