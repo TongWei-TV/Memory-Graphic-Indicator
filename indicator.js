@@ -24,6 +24,7 @@ const SETTINGS_KEYS = [
     'bar-order',
     'bar-direction',
     'rotate',
+    'monitor-command',
     'bar-length',
     'bar-width',
     'bar-gap',
@@ -116,6 +117,11 @@ export const MemoryBarIndicator = GObject.registerClass({
             return;
         }
 
+        if (key === 'monitor-command') {
+            this._syncFileManagerItem();
+            return;
+        }
+
         if (key === 'show-virtual-memory' || key === 'arrangement' || GEOMETRY_KEYS.includes(key)) {
             this._syncSize();
             this._repaint();
@@ -136,9 +142,44 @@ export const MemoryBarIndicator = GObject.registerClass({
 
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-        const prefsItem = new PopupMenu.PopupMenuItem('偏好设置…');
-        prefsItem.connect('activate', () => this._extension.openPreferences());
-        this.menu.addMenuItem(prefsItem);
+        // 打开资源管理器（仅当设置了启动命令时显示），位于偏好设置之前
+        this._prefsItem = new PopupMenu.PopupMenuItem('偏好设置…');
+        this._prefsItem.connect('activate', () => this._extension.openPreferences());
+        this._syncFileManagerItem();
+        this.menu.addMenuItem(this._prefsItem);
+    }
+
+    /**
+     * Shows or removes the "open file manager" entry, following the
+     * monitor-command setting (empty string hides the entry).
+     */
+    _syncFileManagerItem() {
+        const command = (this._settings.get_string('monitor-command') || '').trim();
+
+        if (this._openItem) {
+            this._openItem.destroy();
+            this._openItem = null;
+        }
+        if (!command)
+            return;
+
+        this._openItem = new PopupMenu.PopupMenuItem('打开资源监视器');
+        this._openItem.connect('activate', () => this._launchFileManager(command));
+        this.menu.addMenuItem(this._openItem);
+
+        // 运行中改动设置时，入口会追加到菜单末尾，挪到偏好设置之前
+        const items = this.menu._getMenuItems();
+        const prefsIndex = items.indexOf(this._prefsItem);
+        if (prefsIndex >= 0)
+            this.menu.moveMenuItem(this._openItem, prefsIndex);
+    }
+
+    _launchFileManager(command) {
+        try {
+            GLib.spawn_command_line_async(command);
+        } catch (e) {
+            log(`${this._extension.uuid}: failed to launch file manager '${command}': ${e}`);
+        }
     }
 
     _addStatRow(title) {

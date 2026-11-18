@@ -471,6 +471,49 @@ export default class MemoryBarPreferences extends ExtensionPreferences {
         });
         colorGroup.add(brightnessRow);
 
+        // ------------------------------------------------------------- 资源监视器
+        const monitorGroup = new Adw.PreferencesGroup({
+            title: '资源监视器',
+            description: '设置后，点击面板图形的菜单里会出现「打开资源监视器」入口',
+        });
+        page.add(monitorGroup);
+
+        const monitorRow = new Adw.EntryRow({
+            title: '启动命令',
+            show_apply_button: true,
+        });
+
+        // 重置按钮：恢复 schema 默认值，仅当当前值与默认值不同时可用
+        const monitorResetButton = new Gtk.Button({
+            icon_name: 'edit-undo-symbolic',
+            tooltip_text: '恢复默认命令',
+            valign: Gtk.Align.CENTER,
+            css_classes: ['flat'],
+        });
+        const defaultMonitorCommand = () =>
+            settings.get_default_value('monitor-command').deepUnpack();
+        const syncResetSensitivity = () => {
+            monitorResetButton.set_sensitive(
+                monitorRow.get_text().trim() !== defaultMonitorCommand());
+        };
+        monitorResetButton.connect('clicked', () => {
+            settings.set_string('monitor-command', defaultMonitorCommand());
+        });
+        monitorRow.add_suffix(monitorResetButton);
+
+        monitorRow.set_text(settings.get_string('monitor-command'));
+        monitorRow.connect('apply', () => {
+            settings.set_string('monitor-command', monitorRow.get_text().trim());
+        });
+        settings.connect('changed::monitor-command', () => {
+            const value = settings.get_string('monitor-command');
+            if (monitorRow.get_text().trim() !== value)
+                monitorRow.set_text(value);
+            syncResetSensitivity();
+        });
+        syncResetSensitivity();
+        monitorGroup.add(monitorRow);
+
         // ------------------------------------------------------------- 说明
         const aboutGroup = new Adw.PreferencesGroup({title: '说明'});
         page.add(aboutGroup);

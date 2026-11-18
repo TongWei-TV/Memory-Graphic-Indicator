@@ -125,6 +125,13 @@
       <description>Corner rounding of the bars in pixels. 0 draws plain rectangles.</description>
     </key>
 
+    <!-- 资源监视器启动命令（留空则菜单里不显示入口） -->
+    <key name="monitor-command" type="s">
+      <default>'gnome-system-monitor'</default>
+      <summary>System monitor launch command</summary>
+      <description>Command used to open the system monitor from the indicator menu. Empty hides the menu entry.</description>
+    </key>
+
     <!-- 更新间隔（毫秒） -->
     <key name="update-interval" type="i">
       <default>1000</default>
